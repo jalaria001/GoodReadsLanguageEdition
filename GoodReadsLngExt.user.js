@@ -1,24 +1,24 @@
 // ==UserScript==
-// @name         GoodReads edition language finder
+// @name         GoodReads edition language finder by Jalaria
 // @namespace    gdrs
 // @version     1.8
-// @description  checks wheter there is an edition with given language and adds a link to found edition to book control div 
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js 
-// @author       Ladislav Behal
+// @description  checks wheter there is an edition with given language and adds a link to found edition to book control div
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
+// @author       Ladislav Behal mod by Jalaria
 // @match        https://www.goodreads.com/*
 // @exclude https://www.goodreads.com/work/editions/*
 // @grant        none
 // ==/UserScript==
 
-var language = "Czech";
+var language = "Spanish";
 
 $1 = this.jQuery = jQuery.noConflict(true);
 $1.fn.exists = function () {
     debug(this.length);
     return this.length !== 0;
 }
-var debug = function(x) {    
-    console.log(x); 
+var debug = function(x) {
+    console.log(x);
 };
 
 window.onload = () => {
@@ -41,43 +41,53 @@ window.onload = () => {
 
 var image = "<img style='margin: 0px 0px 0px 7px' alt='' src='https://images.freeimages.com/fic/images/icons/662/world_flag/256/flag_of_czech_republic.png' width='23' height='15' class='thumbborder' >";
 var loadingimage = "<img alt='' src='http://forum.xda-developers.com/clientscript/loading_small.gif'  width='16' height='16'>";
-var getEditions = function(ref, data)
-{
-    var status = $1($1(ref).find('#editiCheckingStatus'));
-       
-    var editionData = $1($1($1($1(data).find("div.editionData")).has("div.dataValue:contains('"+language+"'):first")).find("a.bookTitle"));
-    if(editionData !== undefined && editionData.exists())
-    {
-		var langDivContainer = $1("<div class='langEditionContainer' style='overflow-y: auto;'></div>");
-		 debugger;
+var getEditions = function(ref, data) {
+                var status = $1($1(ref).find('#editiCheckingStatus'));
 
-        if(status !== undefined)
-            status.remove();
+                var editionData = $1($1($1($1(data).find("div.editionData")).has("div.dataValue:contains('" + language + "'):first")).find("a.bookTitle"));
+                var imageData = $1($1($1($1(data).find("div.elementList")).has("div.dataValue:contains('" + language + "'):first")).find("img"));
+                if (editionData !== undefined && editionData.exists()) {
+                    var langDivContainer = $1("<div class='langEditionContainer' style='overflow-y: auto; max-height: 400px; margin-top: 10px;'></div>");
+                    debugger ;
+                    if (status !== undefined)
+                        status.remove();
 
-        $1(langDivContainer).append(image);
-        $1(langDivContainer).append(" ")
+                    //$1(langDivContainer).append(image);
+                    $1(langDivContainer).append(" ")
 
-		editionData.removeClass();
-        editionData.toggleClass("smallText");
+                    editionData.removeClass();
+                    editionData.toggleClass("smallText");
 
-		langDivContainer.append(editionData);
+                    //langDivContainer.append(editionData);
+                    editionData.each(function(index, value) {
+                        value.style.display = 'flex';
+                        value.style.margin = '2px';
+                        value.style.fontSize = 'smaller';
+                    });
+                    langDivContainer.append(editionData);
 
-		langDivContainer.find("a").each(function() {
-			$1(this).after("<span> </span>");
-		});
+                    //langDivContainer.find("a").each(function() {
+                    //	$1(this).after("<br> </br>");
+                    //});
+                    var cont = 0;
+                    langDivContainer.find("a").each(function() {
+                        if (imageData && imageData[cont]) {
+                            $1(this).prepend(imageData[cont]);
+                        }
+                        cont++;
+                    });
 
-        langDivContainer.appendTo(ref);
-    }else
-    {
-        status.text('Edition language not found');
-    }
+                    langDivContainer.appendTo(ref);
+                } else {
+                    status.text('Edition language not found');
+                }
 
-}
+            }
 
-var getBookDetail = function(ref, url) {  
-    $1.get(url).success(function(bookDetail) { 
+var getBookDetail = function(ref, url) {
+    $1.get(url).success(function(bookDetail) {
         //extract
-        
+
         //var link = $1($1(bookDetail).find("div.otherEditionsActions a:contains('All Editions')")).attr('href');
         var match = bookDetail.match(/https:\/\/www.goodreads.com\/work\/editions\/\d+/);
         var link = $1($1(bookDetail).find("a[href^='https://www.goodreads.com/work/editions/']:first")).attr('href');
