@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GoodReads edition language finder by Jalaria
 // @namespace    gdrs
-// @version     1.8
+// @version     1.9
 // @description  checks wheter there is an edition with given language and adds a link to found edition to book control div
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @author       Ladislav Behal mod by Jalaria
